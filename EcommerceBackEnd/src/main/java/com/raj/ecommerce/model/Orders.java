@@ -38,7 +38,7 @@ public class Orders {
 	private Double totalAmount;
 	
 	@ManyToOne
-	@JoinColumn(name = "userid")
+	@JoinColumn(name = "user_id")
 	private User user;
 		
 	//One To Many With Order Item

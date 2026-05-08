@@ -1,6 +1,7 @@
 package com.raj.ecommerce.repository;
 
 import java.util.Date;
+
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,11 +22,11 @@ public interface OrderRepository extends JpaRepository<Orders, Integer>{
 	List<Orders> findByOrderDateGreaterThanEqual(Date orderDate);
 	
 	//Need to get All Orders for a given UserId
-	@Query("SELECT o from ORDERS o where o.user.userId=:userId")
+	@Query("SELECT o from Orders o where o.user.userId=:userId")
 	List<Orders> getAllOrdersByUserId(Integer userId);
 	
 	//Need to get All Orders for a given UserName
-	@Query("SELECT o from ORDERS o where o.user.email=:userName")
+	@Query("SELECT o from Orders o where o.user.email=:userName")
 	List<Orders> getAllOrdersByUserName(String userName);
 	
 }

@@ -43,13 +43,13 @@ public class ProductController {
 		return ResponseEntity.ok(updatedProduct);
 	}
 	
-	@GetMapping(value="/all")
+	/*@GetMapping(value="/all")
 	public ResponseEntity<List<Product>> getAllProducts(){
 		
 		List<Product> allProducts = productService.getAllProducts();
 		return ResponseEntity.ok(allProducts);
 	}
-	
+	*/	
 	@GetMapping(value = "/name/{prodName}")
 	public ResponseEntity<List<Product>> getAllProductsByName(@PathVariable String prodName){
 		
@@ -83,7 +83,7 @@ public class ProductController {
 		return ResponseEntity.ok(product);
 	}
 	
-	@GetMapping("/{productId}")
+	@GetMapping("/delete/{productId}")
 	public ResponseEntity<String> removeProduct(@PathVariable Integer productId){
 		
 		productService.removeProduct(productId);

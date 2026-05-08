@@ -31,6 +31,7 @@ public class JwtTokensGeneratorFilter extends OncePerRequestFilter {
 		Authentication authObj = SecurityContextHolder.getContext().getAuthentication();
 
 		if(authObj != null) {
+			
 			//This means user passed authentication sucessfully
 			SecretKey key = Keys.hmacShaKeyFor(SecurityConstants.JWT_KEY.getBytes());   
 
