@@ -19,8 +19,14 @@ public interface ProductRepository extends JpaRepository<Product, Integer>{
 	@Query("SELECT p FROM Product p WHERE p.category=:category")
 	public List<Product> getProductsByCategory(String category);
 	
-	@Query("SELECT p FROM Product p WHERE p.name like '%keyword% order by sortBy desc' ")
-	public List<Product> findAllByNameContainingIgnoreCase(String keyword, Sort sortOrder, String sortBy);
+	/*@Query("SELECT p FROM Product p WHERE p.name like '%keyword% order by sortBy desc' ")
+	public List<Product> findAllByNameContainingIgnoreCase(String keyword, Sort sortBy);*/
+	
+	List<Product> findByNameContainingIgnoreCase(
+            String keyword,
+            Sort sort
+    );
+	
   //select * from product where name = keyword order by	name sortorder
    
 	

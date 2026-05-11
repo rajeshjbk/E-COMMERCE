@@ -1,5 +1,7 @@
 package com.raj.ecommerce.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -19,32 +21,33 @@ public class Address {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "address_id")
 	private Integer addressId;
-	
-	@Size(max=20)
+
+	@Size(max = 20)
 	@NotNull(message = "Flat Number is Mandatory")
 	@Column(name = "flat_no")
 	private String flatNo;
-	
+
 	@NotNull(message = "Street is Mandatory")
 	@Column(name = "street")
 	private String street;
-	
-	@Size(max=20)
+
+	@Size(max = 20)
 	@NotNull(message = "City is Mandatory")
 	@Column(name = "city")
 	private String city;
-	
-	@Size(max=20)
+
+	@Size(max = 20)
 	@NotNull(message = "State is Mandatory")
 	@Column(name = "state")
 	private String state;
-	
+
 	@NotNull(message = "ZipCode is Mandatory")
 	@Column(name = "zipCode")
 	private String zipCode;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "userid")
+	@JsonIgnore
 	private User user;
 
 	public Integer getAddressId() {
@@ -117,13 +120,13 @@ public class Address {
 		this.user = user;
 	}
 
-	public Address() {}
+	public Address() {
+	}
 
 	@Override
 	public String toString() {
 		return "Address [addressId=" + addressId + ", flatNo=" + flatNo + ", street=" + street + ", city=" + city
 				+ ", state=" + state + ", zipCode=" + zipCode + ", user=" + user + "]";
 	}
-	
-	
+
 }

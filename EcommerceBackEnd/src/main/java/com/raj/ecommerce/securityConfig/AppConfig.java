@@ -18,6 +18,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 
 import jakarta.servlet.http.HttpServletRequest;
 
+
 @Configuration
 public class AppConfig {
 	
@@ -34,7 +35,7 @@ public class AppConfig {
                             CorsConfiguration cfg = new CorsConfiguration();
 
                             cfg.setAllowedOriginPatterns(Collections.singletonList("*"));
-                            cfg.setAllowedOriginPatterns(Collections.singletonList("https://eccomers96.netlify.app/"));
+//                            cfg.setAllowedOriginPatterns(Collections.singletonList("https://eccomers96.netlify.app"));
                             cfg.setAllowedOriginPatterns(Collections.singletonList("http://localhost:3000"));
                             cfg.setAllowedMethods(Collections.singletonList("*"));
         
@@ -49,37 +50,38 @@ public class AppConfig {
                 })
                 .authorizeHttpRequests(auth -> {
                     auth
-                            .requestMatchers(HttpMethod.POST, "/ecom/admin").permitAll()
-                            .requestMatchers(HttpMethod.POST, "/ecom/customers").permitAll()
-                            .requestMatchers(HttpMethod.DELETE, "/ecom/orders/users/**").permitAll()
+                            .requestMatchers(HttpMethod.POST, "/ecom/admin/signIn").permitAll()
+                            .requestMatchers(HttpMethod.POST, "/ecom/customers/addUser").permitAll()
+                            .requestMatchers(HttpMethod.DELETE, "/ecom/orders/delete/**").permitAll()
                             .requestMatchers(HttpMethod.GET, "/ecom/signIn", "/ecom/product-reviews/**","/ecom/products/**").permitAll()
 
                             .requestMatchers(
                                     HttpMethod.POST,
-                                    "/ecom/product/**",
+                                    "/ecom/products/**",
                                     "/ecom/order-shippers/**"
 
                             ).hasRole("ADMIN")
+                            
                             .requestMatchers(
                                     HttpMethod.POST,
-                                    "/ecom/product/**",
-                                    "/ecom/product-reviews/**",
-                                    "/ecom/customer-addresses/**",
+                                   "/ecom/product-reviews/**",
+                                    "/ecom/customer-address/**",
                                     "/ecom/cart/**",
-                                    "/ecom/orders/**",
+                                    "/ecom/orders/placed/**",
                                     "/ecom/order-shipping/**"
                             ).hasRole("USER")
+                            
                             .requestMatchers(
                                     HttpMethod.PUT,
                                     "/ecom/admin/**",
                                     "/ecom/products/**"
 
                             ).hasRole("ADMIN")
+                            
                             .requestMatchers(
                                     HttpMethod.PUT,
-                                    "/ecom/admin/**",
                                     "/ecom/product-reviews/**",
-                                    "/ecom/customer-addresses/update/**",
+                                    "/ecom/customer-address/update/**",
                                     "/ecom/cart/**", "/ecom/order-shipping/**"
 
                             ).hasRole("USER")
@@ -88,30 +90,31 @@ public class AppConfig {
                                     HttpMethod.DELETE,
                                     "/ecom/products/**",
                                     "/ecom/product-reviews/**",
-                                    "/ecom/customer-addresses/delete/**",
+                                    "/ecom/customer-address/delete/**",
 //                                    "/ecom/orders/users/**",
                                     "/ecom/order-shipping/**",
                                     "/ecom/order-shippers/**"
 
                             ).hasRole("ADMIN")
+                            
                             .requestMatchers(
                                     HttpMethod.DELETE,
-                                    "/ecom/cart/remove-product/**"
-//                                    "/ecom/orders/users/**"
+                                    "/ecom/cart/remove-product/**",
+                                    "/ecom/orders/delete/**"
                             ).hasRole("USER")
 
                             .requestMatchers(
                                     HttpMethod.GET,
-
-                                    "/ecom/customer-addresses/**",
+                                    "/ecom/products/**",
+                                    "/ecom/customer-address/**",
                                     "/ecom/cart/products/**",
                                     "/ecom/orders/**",
-                                    "/ecom/order-shippers",
+                                    "/ecom/order-shippers/**",
                                     "/ecom/order-payments/**"
 
                             ).hasAnyRole("ADMIN", "USER")
 
-                            .requestMatchers("/swagger-ui*/**", "/v3/api-docs/**").permitAll()
+                            .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                             .anyRequest().authenticated();
                 })
                 .csrf(csrf -> csrf.disable())
@@ -120,7 +123,6 @@ public class AppConfig {
                 .httpBasic(Customizer.withDefaults());
 
         return http.build();
-
     }
 
     @Bean

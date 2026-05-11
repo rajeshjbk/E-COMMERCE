@@ -3,6 +3,7 @@ package com.raj.ecommerce.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 
 @RestController
 @RequestMapping(value = "/ecom/admin")
+@CrossOrigin("*")
 public class AdminController {
 
 	@Autowired
@@ -27,7 +29,7 @@ public class AdminController {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 	
-	@PostMapping(value = "/addUser")
+	@PostMapping(value="signIn")
 	public ResponseEntity<User> addUser(@RequestBody CustomerDTO user) throws Exception{
 		
 		//Encoded Password will be saved in the database
@@ -37,7 +39,7 @@ public class AdminController {
 		return ResponseEntity.ok(addedUser);
 	}
 	
-	@PutMapping(value="updatedPassword/{userId}")
+	@PutMapping(value="/updatedPassword/{userId}")
 	public ResponseEntity<User> updateUserPassword(
 			@PathVariable("userId") Integer customerId,
 			@RequestBody UserDTO userDto) throws Exception{

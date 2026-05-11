@@ -3,6 +3,7 @@ package com.raj.ecommerce.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +18,7 @@ import com.raj.ecommerce.service.CartService;
 
 @RestController
 @RequestMapping(value="/ecom/cart")
+@CrossOrigin("*")
 public class CartController {
 
 	@Autowired
@@ -46,7 +48,7 @@ public class CartController {
 		return ResponseEntity.ok(cart);
 	}
 	
-	@DeleteMapping(value = "/empty-cart/{cartId}/{productId}")
+	@DeleteMapping(value = "/remove-product/{cartId}/{productId}")
 	public ResponseEntity<String> removeProductFromCar(@PathVariable Integer cartId, @PathVariable Integer productId){
 
 		cartService.removeProductFromCar(cartId, productId);
@@ -56,7 +58,7 @@ public class CartController {
 		return ResponseEntity.ok(msg);
 	}
 	
-	@DeleteMapping(value = "/empty-cart/{cartId}")
+	@DeleteMapping(value = "/remove-product/{cartId}")
 	public ResponseEntity<String> removeAllProductsFromCart(@PathVariable Integer cartId, @PathVariable Integer productId){
 
 		cartService.removeAllProductsFromCart(cartId);

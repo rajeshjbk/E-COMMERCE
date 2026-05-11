@@ -78,28 +78,38 @@ public class ProductServiceImpl implements ProductService{
 	}
 
 	@Override
-	public List<Product> getAllProducts(String keyword, String sortDirection, String sortBy)
-			throws ProductException {
-		
-		Sort sort = Sort.by(sortDirection.equals("asc")? Sort.Direction.ASC:Sort.Direction.DESC);
-		List<Product> products;
-		
-		if(keyword != null) {
-			
-			products = prodRepo.findAllByNameContainingIgnoreCase(keyword,sort, sortBy);
-		}
-		else {
-			
-			products = prodRepo.findAll(sort);
-		}
-		
-		if(products.isEmpty()) {
+	public List<Product> getAllProducts(
+	        String keyword,
+	        String sortDirection,
+	        String sortBy)
+	        throws ProductException {
 
-			throw new ProductException("No Products available in Database");
-		}
-		return products;
+	    Sort sort = Sort.by(
+	            sortDirection.equalsIgnoreCase("asc")
+	                    ? Sort.Direction.ASC
+	                    : Sort.Direction.DESC,
+	            sortBy
+	    );
+
+	    List<Product> products;
+
+	    if (keyword != null && !keyword.isBlank()) {
+
+	        products = prodRepo.findByNameContainingIgnoreCase(keyword, sort);
+	    
+	    } else {
+
+	        products = prodRepo.findAll(sort);
+	    }
+
+	    if (products.isEmpty()) {
+	        throw new ProductException(
+	                "No Products available in Database"
+	        );
+	    }
+
+	    return products;
 	}
-
 	@Override
 	public Product getSingleProduct(Integer productId) throws ProductException {
 		
