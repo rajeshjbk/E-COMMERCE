@@ -3,6 +3,8 @@ package com.raj.ecommerce.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,7 +12,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -23,15 +24,16 @@ public class Cart {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "cart_id")
 	private Integer cartId;
-	
+
 	@Column(name = "total_amount")
-	private Double totalAmount;
-	
-	@OneToMany(mappedBy = "cart", cascade = CascadeType.ALL)
+	private Double totalAmount = 0.0;
+
+	@OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<CartItem> cartItems = new ArrayList<>();
-	
+
 	@OneToOne
 	@JoinColumn(name = "user_id")
+	@JsonIgnore
 	private User user;
 
 	public Integer getCartId() {
@@ -74,13 +76,12 @@ public class Cart {
 	}
 
 	public Cart() {
-		
+
 	}
-	
+
 	@Override
 	public String toString() {
-		return "Cart [cartId=" + cartId + ", totalAmount=" + totalAmount + ", cartItems=" + cartItems + ", user=" + user
-				+ "]";
+		return "Cart [cartId=" + cartId + ", totalAmount=" + totalAmount + "]";
 	}
 
 }

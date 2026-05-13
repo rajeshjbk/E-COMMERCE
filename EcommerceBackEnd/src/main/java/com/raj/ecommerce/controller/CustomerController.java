@@ -30,14 +30,9 @@ public class CustomerController {
 	@Autowired
 	private UserService userService;
 	
-	@Autowired
-	private PasswordEncoder passwordEncoder;
-	
 	@PostMapping(value = "/addUser")
 	public ResponseEntity<User> addUser(@Valid @RequestBody CustomerDTO user) throws Exception{
-		
-		user.setPassword(passwordEncoder.encode(user.getPassword()));
-		
+				
 		User addUser = userService.addUser(user);
 		
 		return ResponseEntity.ok(addUser);
@@ -66,5 +61,13 @@ public class CustomerController {
 		List<User> users = userService.getAllUserDetails();
 		
 		return ResponseEntity.ok(users);
+	}
+	
+	@GetMapping("/{userId}")
+	public ResponseEntity<User> getUserDetails(@PathVariable Integer userId) throws Exception{
+		
+		User user =userService.getUserDetails(userId);
+		
+		return ResponseEntity.ok(user);
 	}
 }

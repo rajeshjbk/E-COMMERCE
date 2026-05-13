@@ -23,14 +23,9 @@ import com.raj.ecommerce.repository.UserRepository;
 @Service
 public class CustomUserDetailsService implements UserDetailsService{
 
-    private final LoginController loginController;
-
 	@Autowired
 	private UserRepository userRepo;
 
-    CustomUserDetailsService(LoginController loginController) {
-        this.loginController = loginController;
-    }
 	
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

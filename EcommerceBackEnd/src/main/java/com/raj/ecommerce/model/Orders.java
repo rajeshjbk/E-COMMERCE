@@ -4,6 +4,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -20,38 +23,40 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name="tbl_orders")
+@Table(name = "tbl_orders")
 public class Orders {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "order_id")
 	private Integer orderId;
-	
+
 	@Column(name = "order_date")
 	private LocalDateTime orderDate;
-	
+
 	@Enumerated(EnumType.STRING)
 	@Column(name = "order_status")
 	private OrderStatus orderStatus;
-	
+
 	private Double totalAmount;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "user_id")
+	@JsonIgnore
 	private User user;
-		
-	//One To Many With Order Item
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+
+	// One To Many With Order Item
+	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<OrderItem> orderItem = new ArrayList<>();
-	
-	//One To One With Payment Table
+
+	// One To One With Payment Table
 	@OneToOne
 	@JoinColumn(name = "payment_id")
 	private Payment payment;
-	
-	//One To One With Shipping Entity
-	@OneToOne
+
+	// One To One With Shipping Entity
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "shipping_id")
 	private ShippingDetails shippingDetails;
 
 	public Integer getOrderId() {
@@ -131,15 +136,13 @@ public class Orders {
 	}
 
 	public Orders() {
-		
+
 	}
-	
+
 	@Override
 	public String toString() {
 		return "Orders [orderId=" + orderId + ", orderDate=" + orderDate + ", orderStatus=" + orderStatus
-				+ ", totalAmount=" + totalAmount + ", user=" + user + ", orderItem=" + orderItem + ", payment="
-				+ payment + ", shippingDetails=" + shippingDetails + "]";
+				+ ", totalAmount=" + totalAmount + "]";
 	}
-	
-	
+
 }

@@ -1,5 +1,7 @@
 package com.raj.ecommerce.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -17,14 +19,15 @@ public class CartItem {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "cart_item_id")
 	private Integer cartItemId;
-	
+
 	@Column(name = "quantity")
 	private Integer quantity;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "cart_id")
+	@JsonIgnore
 	private Cart cart;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "product_id")
 	private Product product;
@@ -69,12 +72,11 @@ public class CartItem {
 	}
 
 	public CartItem() {
-		
+
 	}
-	
+
 	@Override
 	public String toString() {
-		return "CartItem [cartItemId=" + cartItemId + ", quantity=" + quantity + ", cart=" + cart + ", product="
-				+ product + "]";
+		return "CartItem [cartItemId=" + cartItemId + ", quantity=" + quantity + "]";
 	}
 }

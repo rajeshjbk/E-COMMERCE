@@ -3,6 +3,9 @@ package com.raj.ecommerce.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -22,37 +25,39 @@ public class Product {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "product_id")
 	private Integer productId;
-	
+
 	@NotNull(message = "Product Name is Mandatory and can't be Null")
 	@Column(name = "prod_name")
 	private String name;
-	
+
 	@NotNull(message = "Product Description is Mandatory and can't be Null")
 	@Column(name = "prod_description")
-	@Size(min=10, max=50)
+	@Size(min = 10, max = 50)
 	private String description;
-	
+
 	@NotNull(message = "Image URL is Mandatory and can't be Null")
 	@Column(name = "img_url")
 	private String imageUrl;
-		
+
 	@NotNull(message = "Product Price is Mandatory and can't be Null")
 	@Column(name = "prod_price")
 	private Double price;
-	
+
 	@NotNull(message = "Product Category is Mandatory and can't be Null")
 	@Column(name = "category_name")
 	private String category;
-	
+
 	@Column(name = "is_available ")
 	private Boolean isAvailable = true;
-	
-	//One To Many With OrderItem
+
+	// One To Many With OrderItem
 	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+	@JsonIgnore
 	private List<OrderItem> orderItem = new ArrayList<>();
-	
-	//One To Many Reviews
+
+	// One To Many Reviews
 	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+	@JsonIgnoreProperties("product")
 	private List<Review> reviews = new ArrayList<>();
 
 	public Integer getProductId() {
@@ -145,14 +150,13 @@ public class Product {
 	}
 
 	public Product() {
-		
+
 	}
 
 	@Override
 	public String toString() {
 		return "Product [productId=" + productId + ", name=" + name + ", description=" + description + ", imageUrl="
-				+ imageUrl + ", price=" + price + ", category=" + category + ", isAvailable=" + isAvailable
-				+ ", orderItem=" + orderItem + ", reviews=" + reviews + "]";
+				+ imageUrl + ", price=" + price + ", category=" + category + ", isAvailable=" + isAvailable + "]";
 	}
-    
+
 }

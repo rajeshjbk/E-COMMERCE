@@ -47,40 +47,40 @@ public class OrderServiceImpl implements OrderService{
 	@Autowired
 	private CartItemRepository cartItemRepository;
 
-	@Override
+	/*@Override
 	public OrderDTO placeOrder(Integer userId) throws OrderException {
-
+	
 		User existingUser = userRepository.findById(userId).orElseThrow(()-> new UserException("User Not Found in the Database"));
-
+	
 		Cart userCart = existingUser.getCart();
-
+	
 		if(userCart.getTotalAmount()==0) {
-
+	
 			throw new OrderException("Cart is Empty.. Add the item First");
 		}
 		Integer cartId = userCart.getCartId();
-
+	
 		Orders newOrd = new Orders();
 		newOrd.setOrderDate(LocalDateTime.now());
 		newOrd.setOrderStatus(OrderStatus.PENDING);
-
+	
 		existingUser.getOrders().add(newOrd); //User to Order
 		newOrd.setUser(existingUser);  //Order to Order
-
+	
 		userRepository.save(existingUser);
 		orderRepository.save(newOrd);
-
+	
 		//with above two statements user id will be updated in order table
 		//order_id will be updated in user table
-
+	
 		//now need to save OrderItems
-
+	
 		List<OrderItem> orderItems = new ArrayList<OrderItem>();
-
+	
 		for(CartItem itemDto: userCart.getCartItems()) {
-
+	
 			if(itemDto.getCart().getCartId()==cartId) {
-
+	
 				OrderItem ordItem = new OrderItem();
 				ordItem.setProduct(itemDto.getProduct());
 				ordItem.setOrderId(ordItem.getOrderId());
@@ -91,7 +91,7 @@ public class OrderServiceImpl implements OrderService{
 			newOrd.setTotalAmount(userCart.getTotalAmount());
 			orderRepository.save(newOrd);
 		}
-
+	
 		//Preparing Return Type
 		OrderDTO outputObj = new OrderDTO();
 		outputObj.setOrderId(newOrd.getOrderId());
@@ -99,10 +99,79 @@ public class OrderServiceImpl implements OrderService{
 		outputObj.setOrderAmount(newOrd.getTotalAmount());
 		outputObj.setStatus(OrderStatus.PENDING.toString());
 		outputObj.setPaymentStatus(PaymentStatus.PENDING.toString());
-
+	
 		return outputObj;
 	}
+	*/
+	
+	@Override
+	public OrderDTO placeOrder(Integer userId) throws OrderException {
 
+	    User existingUser = userRepository.findById(userId)
+	            .orElseThrow(() -> new UserException("User Not Found in Database"));
+
+	    Cart userCart = existingUser.getCart();
+
+	    if (userCart == null || userCart.getCartItems().isEmpty()) {
+	        throw new OrderException("Cart is Empty.. Add item first");
+	    }
+
+	    Orders newOrd = new Orders();
+	    newOrd.setOrderDate(LocalDateTime.now());
+	    newOrd.setOrderStatus(OrderStatus.PENDING);
+	    newOrd.setTotalAmount(userCart.getTotalAmount());
+
+	    // User <-> Order Mapping
+	    newOrd.setUser(existingUser);
+
+	    if (existingUser.getOrders() == null) {
+	        existingUser.setOrders(new ArrayList<>());
+	    }
+
+	    existingUser.getOrders().add(newOrd);
+
+	    // Save Order First
+	    Orders savedOrder = orderRepository.save(newOrd);
+
+	    // Create Order Items
+	    List<OrderItem> orderItems = new ArrayList<>();
+
+	    for (CartItem cartItem : userCart.getCartItems()) {
+
+	        OrderItem ordItem = new OrderItem();
+	        ordItem.setProduct(cartItem.getProduct());
+	        ordItem.setQuantity(cartItem.getQuantity());
+
+	        // Link OrderItem with Order
+	        ordItem.setOrder(savedOrder);
+
+	        orderItems.add(ordItem);
+	    }
+
+	    // Save all order items
+	    orderItems = orderItemRepository.saveAll(orderItems);
+
+	    // Set Order Items to Order
+	    savedOrder.setOrderItem(orderItems);
+
+	    orderRepository.save(savedOrder);
+
+	    // Clear Cart After Order
+	    userCart.getCartItems().clear();
+	    userCart.setTotalAmount(0.0);
+	    cartRepository.save(userCart);
+
+	    // Return DTO
+	    OrderDTO outputObj = new OrderDTO();
+	    outputObj.setOrderId(savedOrder.getOrderId());
+	    outputObj.setOrderDate(savedOrder.getOrderDate());
+	    outputObj.setOrderAmount(savedOrder.getTotalAmount());
+	    outputObj.setStatus(OrderStatus.PENDING.toString());
+	    outputObj.setPaymentStatus(PaymentStatus.PENDING.toString());
+
+	    return outputObj;
+	}
+	
 	@Override
 	public Orders getOrderDetails(Integer orderId) throws OrderException {
 

@@ -35,9 +35,11 @@ public class JwtTokensGeneratorFilter extends OncePerRequestFilter {
 			//This means user passed authentication sucessfully
 			SecretKey key = Keys.hmacShaKeyFor(SecurityConstants.JWT_KEY.getBytes());   
 
-			String jwtToken = Jwts.builder().setIssuer("NARESHIT ECOMMERCE")
-					.setSubject("JWT TOKEN")
-					.claim("username", authObj.getName())
+			String jwtToken = Jwts.builder().setIssuer("RAJIT ECOMMERCE")
+					.setSubject(authObj.getName())
+					/*.setSubject("JWT TOKEN")
+					.claim("username", authObj.getName())*/
+					
 					.claim("authorities", populateAuthorities(authObj.getAuthorities()))
 					.setIssuedAt(new Date())
 					.setExpiration(new Date(new Date().getTime() + 30000000))

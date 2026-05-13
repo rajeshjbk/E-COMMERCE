@@ -2,6 +2,9 @@ package com.raj.ecommerce.model;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -21,8 +24,8 @@ public class Payment {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "product_id")
-	private Integer productId;
+	@Column(name = "payment_id")
+	private Integer paymentId;
 
 	@NotNull(message = "Payment Amount is Mandatory and can't be Null is ")
 	@Column(name = "payment_amount")
@@ -41,18 +44,27 @@ public class Payment {
 
 	@OneToOne
 	@JoinColumn(name = "order_id")
+	@JsonIgnore
 	private Orders order;
 
 	@ManyToOne
 	@JoinColumn(name = "user_id")
+	@JsonIgnoreProperties({
+	    "password",
+	    "orders",
+	    "payments",
+	    "reviews",
+	    "cart",
+	    "address"
+	})
 	private User user;
 
-	public Integer getProductId() {
-		return productId;
+	public Integer getPaymentId() {
+		return paymentId;
 	}
 
-	public void setProductId(Integer productId) {
-		this.productId = productId;
+	public void setPaymentId(Integer paymentId) {
+		this.paymentId = paymentId;
 	}
 
 	public Double getPaymentAmount() {
@@ -116,16 +128,13 @@ public class Payment {
 	}
 
 	public Payment() {
-		
+
 	}
-	
+
 	@Override
 	public String toString() {
-		return "Payment [productId=" + productId + ", paymentAmount=" + paymentAmount + ", paymentDate=" + paymentDate
-				+ ", paymentMethod=" + paymentMethod + ", paymentStatus=" + paymentStatus + ", order=" + order
-				+ ", user=" + user + "]";
+		return "Payment [paymentId=" + paymentId + ", paymentAmount=" + paymentAmount + ", paymentDate=" + paymentDate
+				+ ", paymentMethod=" + paymentMethod + ", paymentStatus=" + paymentStatus + "]";
 	}
-
-
 
 }

@@ -20,60 +20,59 @@ import com.raj.ecommerce.model.Orders;
 import com.raj.ecommerce.service.OrderService;
 
 @RestController
-@RequestMapping(value="/ecom/orders")
+@RequestMapping(value = "/ecom/orders")
 @CrossOrigin("*")
 public class OrderController {
 
 	@Autowired
 	private OrderService orderService;
-	
+
 	@PostMapping("/placed/{userId}")
-	public ResponseEntity<?> addOrderToCart(@PathVariable("userId") Integer userId){
-		
+	public ResponseEntity<?> addOrderToCart(@PathVariable("userId") Integer userId) {
+
 		OrderDTO placeOrder = orderService.placeOrder(userId);
-		
+
 		return ResponseEntity.ok(placeOrder);
 	}
-	
-	@GetMapping("/{orderId}")
-	public ResponseEntity<Orders> getOrderDetails(@PathVariable("orderId") Integer orderId){
-		
+
+	@GetMapping("/details/{orderId}")
+	public ResponseEntity<?> getOrderDetails(@PathVariable Integer orderId) {
+
 		Orders order = orderService.getOrderDetails(orderId);
-		
+
 		return new ResponseEntity<>(order, HttpStatus.OK);
 	}
-	
-	@GetMapping("/{userId}")
-	public ResponseEntity<List<Orders>> getAllUserOrders(@PathVariable("userId") Integer userId){
-		
+
+	@GetMapping("/user/{userId}")
+	public ResponseEntity<?> getAllUserOrders(@PathVariable Integer userId) {
+
 		List<Orders> ordersList = orderService.getAllUserOrders(userId);
-		
+
 		return new ResponseEntity<>(ordersList, HttpStatus.OK);
 	}
-	
+
 	@GetMapping("/all")
-	public ResponseEntity<List<Orders>> getAllOrders(){
-		
+	public ResponseEntity<List<Orders>> getAllOrders() {
+
 		List<Orders> ordersList = orderService.getAllOrders();
-		
+
 		return new ResponseEntity<>(ordersList, HttpStatus.OK);
 	}
-	
+
 	@GetMapping("/date/{date}")
 	public ResponseEntity<List<Orders>> viewAllOrdersByDate(
-			@PathVariable("date") @DateTimeFormat(pattern = "yyyy-MM-dd") Date inputDate){
-		
+			@PathVariable("date") @DateTimeFormat(pattern = "yyyy-MM-dd") Date inputDate) {
+
 		List<Orders> ordersList = orderService.viewAllOrdersByDate(inputDate);
 		return new ResponseEntity<>(ordersList, HttpStatus.OK);
 	}
-	
+
 	@DeleteMapping("delete/{userId}/{orderId}")
-	public ResponseEntity<String> deleteOrders(@PathVariable Integer userId,
-			@PathVariable Integer orderId){
-		
+	public ResponseEntity<String> deleteOrders(@PathVariable Integer userId, @PathVariable Integer orderId) {
+
 		orderService.deleteOrders(userId, orderId);
-		
+
 		return new ResponseEntity<>("Order is Deleted Successfully", HttpStatus.OK);
 	}
-	
+
 }

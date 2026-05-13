@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -18,61 +20,64 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
-@Entity  //At run time a table will be created with name as User
-@Table(name="tbl_user")  //This will cutomize the table name with tbl_user
+@Entity // At run time a table will be created with name as User
+@Table(name = "tbl_user") // This will cutomize the table name with tbl_user
 public class User {
-	
-	//User Table should have primary key
+
+	// User Table should have primary key
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "user_id")
 	private Integer userId;
-	
+
 	@Column(name = "user_email", unique = true)
-	private String email;  //Column name will be same as property name
-	
+	private String email; // Column name will be same as property name
+
 	@Column(name = "user_pwd")
 	private String password;
-	
+
 	@Column(name = "first_name")
 	private String firstName;
-	
+
 	@Column(name = "last_name")
 	private String lastName;
-	
+
 	@Column(name = "user_phone")
 	private String phoneNumber;
-	
+
 	@Column(name = "user_reg_time")
 	@CreationTimestamp
 	private LocalDateTime registerTime;
-	
+
 	@Enumerated(EnumType.STRING)
-	@Column(name="user_role")
+	@Column(name = "user_role")
 	private UserRole role;
-	
+
 	@Enumerated(EnumType.STRING)
-	@Column(name="acct_status")
+	@Column(name = "acct_status")
 	private UserAccountStatus accountStatus;
-	
-	//Address Entity
+
+	// Address Entity
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	private List<Address> address = new ArrayList<>();
-	
-	//One To Many With Orders
+
+	// One To Many With Orders
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	private List<Orders> orders = new ArrayList<>();
-	
-	//One To Many With payments
+
+	// One To Many With payments
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	@JsonIgnore
 	private List<Payment> payments = new ArrayList<>();
-	
-	//One To Many With Reviews
+
+	// One To Many With Reviews
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	@JsonIgnore
 	private List<Review> reviews = new ArrayList<>();
 
-	//One To One With Cart
+	// One To One With Cart
 	@OneToOne(mappedBy = "user")
+	@JsonIgnore
 	private Cart cart;
 
 	public Integer getUserId() {
@@ -207,14 +212,12 @@ public class User {
 	}
 
 	public User() {
-		
+
 	}
-	
+
 	@Override
 	public String toString() {
-		return "User [userId=" + userId + ", email=" + email + ", password=" + password + ", firstName=" + firstName
-				+ ", lastName=" + lastName + ", phoneNumber=" + phoneNumber + ", registerTime=" + registerTime
-				+ ", role=" + role + ", accountStatus=" + accountStatus + ", address=" + address + ", orders=" + orders
-				+ ", payments=" + payments + ", reviews=" + reviews + ", cart=" + cart + "]";
-	}	
+		return "User [userId=" + userId + ", email=" + email + ", firstName=" + firstName + ", lastName=" + lastName
+				+ ", phoneNumber=" + phoneNumber + ", role=" + role + ", accountStatus=" + accountStatus + "]";
+	}
 }

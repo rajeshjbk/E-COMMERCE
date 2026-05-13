@@ -15,14 +15,41 @@ import com.raj.ecommerce.model.User;
 import com.raj.ecommerce.service.UserService;
 
 @RestController
-@RequestMapping(value="/ecom")
+@RequestMapping(value = "/ecom")
 @CrossOrigin("*")
 public class LoginController {
 
 	@Autowired
 	private UserService userService;
-	
-	@GetMapping(value = "/signIn")
+
+	@GetMapping("/signIn")
+	public ResponseEntity<UserSigninDetail> getLoggedInCustomerDetailsHandler(Authentication authObj) {
+
+		try {
+
+			User userObj = userService.getUserByEmailId(authObj.getName());
+
+			UserSigninDetail signinSuccessData = new UserSigninDetail();
+
+			signinSuccessData.setId(userObj.getUserId());
+
+			signinSuccessData.setFirstName(userObj.getFirstName());
+
+			signinSuccessData.setLastName(userObj.getLastName());
+
+			signinSuccessData.setSignInStatus("SUCCESS");
+
+			// ADD ROLE
+			signinSuccessData.setUserRole(userObj.getRole().toString());
+
+			return new ResponseEntity<>(signinSuccessData, HttpStatus.OK);
+
+		} catch (Exception e) {
+
+			throw new UserException("Invalid Password");
+		}
+	}
+	/*@GetMapping(value = "/signIn")
 	public ResponseEntity<UserSigninDetail> getLoggedInCustomerDetailsHandler(Authentication authObj){
 		
 		try {
@@ -39,5 +66,5 @@ public class LoginController {
 		}catch (Exception e) {
 			throw new UserException("Invalid Password");
 		}
-	}
+	}*/
 }

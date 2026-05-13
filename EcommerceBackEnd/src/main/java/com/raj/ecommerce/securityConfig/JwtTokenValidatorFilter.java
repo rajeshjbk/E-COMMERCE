@@ -66,7 +66,11 @@ public class JwtTokenValidatorFilter extends OncePerRequestFilter {
                 // Set Authentication
                 SecurityContextHolder.getContext()
                         .setAuthentication(authObj);
-
+                
+                System.out.println(jwtToken);
+                System.out.println(userName);
+                System.out.println(userRoles);
+                
             } catch (Exception ex) {
 
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

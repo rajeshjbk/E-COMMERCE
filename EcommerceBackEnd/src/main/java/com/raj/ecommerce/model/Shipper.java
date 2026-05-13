@@ -3,6 +3,8 @@ package com.raj.ecommerce.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -22,16 +24,17 @@ public class Shipper {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "shipper_id")
 	private Integer shipperId;
-	
+
 	@NotNull(message = "Name is Mandatory and it can't be Null")
 	@Column(name = "name")
 	private String name;
-	
+
 	@NotNull(message = "PhoneNumber is Mandatory and it can't be Null")
 	@Column(name = "phone_number")
 	private String phoneNumber;
 
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "shipper", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<ShippingDetails> shippingDetails = new ArrayList<>();
 
 	public Integer getShipperId() {
@@ -74,14 +77,14 @@ public class Shipper {
 		this.phoneNumber = phoneNumber;
 		this.shippingDetails = shippingDetails;
 	}
-	
+
 	public Shipper() {
-		
+
 	}
 
 	@Override
 	public String toString() {
 		return "Shipper [shipperId=" + shipperId + ", name=" + name + ", phoneNumber=" + phoneNumber
 				+ ", shippingDetails=" + shippingDetails + "]";
-	}	
+	}
 }

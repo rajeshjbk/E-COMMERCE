@@ -1,5 +1,7 @@
 package com.raj.ecommerce.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -44,8 +46,9 @@ public class ShippingDetails {
 	@JoinColumn(name = "shipper_id")
 	private Shipper shipper;
 	
-    @OneToOne
-    private Orders order;
+	@OneToOne(mappedBy = "shippingDetails")
+	@JsonIgnore
+	private Orders order;
 
 	public Integer getShippingId() {
 		return shippingId;

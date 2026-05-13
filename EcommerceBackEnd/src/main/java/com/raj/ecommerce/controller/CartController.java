@@ -26,7 +26,7 @@ public class CartController {
 
 	@PostMapping(value = "/add-product")
 	public ResponseEntity<Cart> addProductToCart(@RequestParam Integer userId, @RequestParam Integer productId){
-
+   
 		Cart productToCart = cartService.addProductToCart(userId, productId);
 
 		return new ResponseEntity<Cart>(productToCart, HttpStatus.CREATED);
@@ -51,15 +51,15 @@ public class CartController {
 	@DeleteMapping(value = "/remove-product/{cartId}/{productId}")
 	public ResponseEntity<String> removeProductFromCar(@PathVariable Integer cartId, @PathVariable Integer productId){
 
-		cartService.removeProductFromCar(cartId, productId);
+		cartService.removeProductFromCart(cartId, productId);
 		
         String msg = "Product is Removed From Cart";
         
 		return ResponseEntity.ok(msg);
 	}
 	
-	@DeleteMapping(value = "/remove-product/{cartId}")
-	public ResponseEntity<String> removeAllProductsFromCart(@PathVariable Integer cartId, @PathVariable Integer productId){
+	@DeleteMapping(value = "/remove-all-product/{cartId}")
+	public ResponseEntity<String> removeAllProductsFromCart(@PathVariable Integer cartId){
 
 		cartService.removeAllProductsFromCart(cartId);
 		

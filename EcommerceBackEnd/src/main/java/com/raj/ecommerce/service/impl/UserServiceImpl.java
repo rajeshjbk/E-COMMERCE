@@ -37,7 +37,7 @@ public class UserServiceImpl implements UserService{
 
 		User newCustomer = new User();
 		newCustomer.setEmail(customer.getEmail());
-		newCustomer.setPassword(customer.getPassword());
+		newCustomer.setPassword(passwordEncoder.encode(customer.getPassword()));
 		newCustomer.setFirstName(customer.getFirstName());
 		newCustomer.setLastName(customer.getLastName());
 		newCustomer.setPhoneNumber(customer.getPhoneNumber());
@@ -61,7 +61,7 @@ public class UserServiceImpl implements UserService{
 
 		User newCustomer = new User();
 		newCustomer.setEmail(adminUser.getEmail());
-		newCustomer.setPassword(adminUser.getPassword());
+		newCustomer.setPassword(passwordEncoder.encode(adminUser.getPassword()));
 		newCustomer.setFirstName(adminUser.getFirstName());
 		newCustomer.setLastName(adminUser.getLastName());
 		newCustomer.setPhoneNumber(adminUser.getPhoneNumber());
@@ -100,7 +100,7 @@ public class UserServiceImpl implements UserService{
 		
 		if(customer.getNewPassword().length()>=5) {
 			
-			userObj.setPassword(customer.getNewPassword());
+			userObj.setPassword(passwordEncoder.encode(customer.getNewPassword()));
 	        return userRepository.save(userObj);
 		
 		}else {

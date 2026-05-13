@@ -1,6 +1,5 @@
 package com.raj.ecommerce.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +18,8 @@ import com.raj.ecommerce.repository.ProductRepository;
 import com.raj.ecommerce.repository.UserRepository;
 import com.raj.ecommerce.service.CartService;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class CartServiceImpl implements CartService {
 
@@ -34,26 +35,28 @@ public class CartServiceImpl implements CartService {
 	@Autowired
 	private CartItemRepository cartItemRepository;
 
-
 	@Override
 	public Cart addProductToCart(Integer userId, Integer productId) throws CartException {
 
-		Product existProd = productRepository.findById(productId).orElseThrow(()-> new ProductException("Product is Not Available in Stock"));
+		Product existProd = productRepository.findById(productId)
+				.orElseThrow(() -> new ProductException("Product is Not Available in Stock"));
 
-		User existUser = userRepository.findById(userId).orElseThrow(()-> new UserException("User is Not Available"));
+		User existUser = userRepository.findById(userId).orElseThrow(() -> new UserException("User is Not Available"));
 
-		//Below code will verify Product is Already available in Cart. If available we will throw exception.
-		if(existUser.getCart()!=null) {
+		// Below code will verify Product is Already available in Cart. If available we
+		// will throw exception.
+		if (existUser.getCart() != null) {
 
 			Cart userCart = existUser.getCart();
 
 			List<CartItem> cartItems = userCart.getCartItems();
 
-			if(cartItems != null) {
+			if (cartItems != null) {
 
-				for(int i=0; i < cartItems.size(); i++) {
+				for (int i = 0; i < cartItems.size(); i++) {
 
-					if(cartItems.get(i).getProduct().getProductId()==productId && cartItems.get(i).getCart().getCartId() == userCart.getCartId()) {
+					if (cartItems.get(i).getProduct().getProductId() == productId
+							&& cartItems.get(i).getCart().getCartId() == userCart.getCartId()) {
 
 						throw new CartException("Already Product Exists in Cart You can Either Decrease or Increase");
 					}
@@ -70,31 +73,57 @@ public class CartServiceImpl implements CartService {
 
 			return cartRepository.save(userCart);
 
-		}else {
-
+		} /*else {
+			
 			//First time User is adding Product to the Cart
 			Cart newCart = new Cart();
 			newCart.setUser(existUser);
 			existUser.setCart(newCart);
-
+			
 			CartItem cartItem = new CartItem();
 			cartItem.setProduct(existProd);
 			cartItem.setQuantity(1);
-
+			
 			newCart.getCartItems().add(cartItem);
 			cartItem.setCart(newCart);
-
+			
 			newCart.setTotalAmount(calculateCartTotal(newCart.getCartItems()));
 			userRepository.save(existUser);
-
+			
 			return existUser.getCart();
+			}*/
+
+		else {
+
+			// Create new cart
+			Cart newCart = new Cart();
+			newCart.setUser(existUser);
+
+			// Save cart first
+			Cart savedCart = cartRepository.save(newCart);
+
+			existUser.setCart(savedCart);
+
+			// Create cart item
+			CartItem cartItem = new CartItem();
+			cartItem.setProduct(existProd);
+			cartItem.setQuantity(1);
+			cartItem.setCart(savedCart);
+
+			savedCart.getCartItems().add(cartItem);
+
+			savedCart.setTotalAmount(calculateCartTotal(savedCart.getCartItems()));
+
+			cartRepository.save(savedCart);
+
+			return savedCart;
 		}
 	}
 
 	public double calculateCartTotal(List<CartItem> cartItems) {
 
 		double totalAmt = 0.0;
-		for(CartItem item: cartItems) {
+		for (CartItem item : cartItems) {
 			double itemPrice = item.getProduct().getPrice();
 			int itemQty = item.getQuantity();
 			totalAmt += (itemPrice * itemQty);
@@ -106,9 +135,9 @@ public class CartServiceImpl implements CartService {
 	@Override
 	public Cart increaseProductQuantity(Integer userId, Integer productId) throws CartException {
 
-		User existUser = userRepository.findById(userId).orElseThrow(()-> new UserException("User is Not Available"));
+		User existUser = userRepository.findById(userId).orElseThrow(() -> new UserException("User is Not Available"));
 
-		if(existUser.getCart() == null) {
+		if (existUser.getCart() == null) {
 
 			throw new UserException("User Cart is Not available");
 		}
@@ -116,17 +145,16 @@ public class CartServiceImpl implements CartService {
 		Cart userCart = existUser.getCart();
 		List<CartItem> cartItems = userCart.getCartItems();
 
-		//Find the Product from Cart which should match with productId and increase
-		//the quantity to the matched product
+		// Find the Product from Cart which should match with productId and increase
+		// the quantity to the matched product
 		CartItem cartItemToUpdate = cartItems.stream()
 				.filter(item -> item.getProduct().getProductId().equals(productId)
-						&& item.getCart().getCartId().equals(userCart.getCartId())
-						).findFirst()
-				.orElseThrow(()-> new CartException("Cart Item Not Found"));
+						&& item.getCart().getCartId().equals(userCart.getCartId()))
+				.findFirst().orElseThrow(() -> new CartException("Cart Item Not Found"));
 
-		//After match found, then we can increase the quantity
+		// After match found, then we can increase the quantity
 		int qty = cartItemToUpdate.getQuantity();
-		cartItemToUpdate.setQuantity(qty+1);
+		cartItemToUpdate.setQuantity(qty + 1);
 		cartItemRepository.save(cartItemToUpdate);
 
 		userCart.setCartItems(cartItems);
@@ -138,9 +166,9 @@ public class CartServiceImpl implements CartService {
 
 	@Override
 	public Cart decreaseProductQuantity(Integer userId, Integer productId) throws CartException {
-		User existUser = userRepository.findById(userId).orElseThrow(()-> new UserException("User is Not Available"));
+		User existUser = userRepository.findById(userId).orElseThrow(() -> new UserException("User is Not Available"));
 
-		if(existUser.getCart() == null) {
+		if (existUser.getCart() == null) {
 
 			throw new UserException("User Cart is Not available");
 		}
@@ -148,30 +176,29 @@ public class CartServiceImpl implements CartService {
 		Cart userCart = existUser.getCart();
 		List<CartItem> cartItems = userCart.getCartItems();
 
-		//Find the Product from Cart which should match with productId and decrease
-		//the quantity to the matched product
+		// Find the Product from Cart which should match with productId and decrease
+		// the quantity to the matched product
 		CartItem cartItemToUpdate = cartItems.stream()
 				.filter(item -> item.getProduct().getProductId().equals(productId)
-						&& item.getCart().getCartId().equals(userCart.getCartId())
-						).findFirst()
-				.orElseThrow(()-> new CartException("Cart Item Not Found"));
+						&& item.getCart().getCartId().equals(userCart.getCartId()))
+				.findFirst().orElseThrow(() -> new CartException("Cart Item Not Found"));
 
-		//After match found, then we can decrease the quantity
+		// After match found, then we can decrease the quantity
 		int qty = cartItemToUpdate.getQuantity();
-		if(qty==1) {
+		if (qty == 1) {
 			throw new CartException("Product Can't be further Decrease....");
 		}
 
-		if(qty>1) {
+		if (qty > 1) {
 
-			cartItemToUpdate.setQuantity(qty-1);
+			cartItemToUpdate.setQuantity(qty - 1);
 			cartItemRepository.save(cartItemToUpdate);
 
 			userCart.setCartItems(cartItems);
 			userCart.setTotalAmount(calculateCartTotal(cartItems));
 			cartRepository.save(userCart);
 
-		}else {
+		} else {
 
 			cartItems.remove(cartItemToUpdate);
 			userCart.setCartItems(cartItems);
@@ -182,53 +209,111 @@ public class CartServiceImpl implements CartService {
 	}
 
 	@Override
-	public void removeProductFromCar(Integer cartId, Integer productId) throws CartException {
+	@Transactional
+	public void removeProductFromCart(Integer cartId, Integer productId) throws CartException {
 
-		Cart existCart = cartRepository.findById(cartId).
-				orElseThrow(()-> new CartException("Cart Not Found"));
+		Cart existCart = cartRepository.findById(cartId).orElseThrow(() -> new CartException("Cart Not Found"));
 
+		// Find cart item
+		CartItem cartItem = cartItemRepository.findByCartCartIdAndProductProductId(cartId, productId);
+
+		if (cartItem == null) {
+			throw new CartException("Product not found in cart");
+		}
+
+		// Remove from cart list
+		existCart.getCartItems().remove(cartItem);
+
+		// Delete from DB
+		cartItemRepository.delete(cartItem);
+
+		// Recalculate total
+		double updatedTotal = calculateCartTotal(existCart.getCartItems());
+
+		existCart.setTotalAmount(updatedTotal);
+
+		// Save cart
+		cartRepository.save(existCart);
+	}
+	
+	/*@Override
+	public void removeProductFromCart(Integer cartId, Integer productId) throws CartException {
+	
+		Cart existCart = cartRepository.findById(cartId).orElseThrow(() -> new CartException("Cart Not Found"));
+	
 		cartItemRepository.removeProductFromCart(cartId, productId);
-
+	
 		List<CartItem> list = existCart.getCartItems();
 		existCart.setTotalAmount(calculateCartTotal(list));
 		cartRepository.save(existCart);
-
-	}
+	
+	}*/
 
 	@Override
+	@Transactional
 	public void removeAllProductsFromCart(Integer cartId) throws CartException {
-	
-		Cart existCart = cartRepository.findById(cartId).
-				orElseThrow(()-> new CartException("Cart Not Found"));
-		
-		cartItemRepository.removeAllProductsFromCart(cartId);
+
+		Cart existCart = cartRepository.findById(cartId).orElseThrow(() -> new CartException("Cart Not Found"));
+
+		// Clear child entities first
+		existCart.getCartItems().clear();
+
+		// Save parent
+		cartRepository.save(existCart);
+
+		// Reset amount
 		existCart.setTotalAmount(0.0);
+
 		cartRepository.save(existCart);
 	}
 
+	/*@Override
+	public void removeAllProductsFromCart(Integer cartId) throws CartException {
+	
+		Cart existCart = cartRepository.findById(cartId).orElseThrow(() -> new CartException("Cart Not Found"));
+	
+		cartItemRepository.removeAllProductsFromCart(cartId);
+		existCart.setTotalAmount(0.0);
+		cartRepository.save(existCart);
+	}*/
+
 	@Override
 	public Cart getAllCartProducts(Integer cartId) throws CartException {
-		
-		Cart existCart = cartRepository.findById(cartId).
-				orElseThrow(()-> new CartException("Cart Not Found"));
-		
+
+		Cart existCart = cartRepository.findById(cartId).orElseThrow(() -> new CartException("Cart Not Found"));
+
+		// If cart is empty
+		if (existCart.getCartItems() == null || existCart.getCartItems().isEmpty()) {
+
+			existCart.setTotalAmount(0.0);
+			return existCart;
+		}
+
+		return existCart;
+	}
+
+	/*@Override
+	public Cart getAllCartProducts(Integer cartId) throws CartException {
+	
+		Cart existCart = cartRepository.findById(cartId).orElseThrow(() -> new CartException("Cart Not Found"));
+	
 		List<CartItem> cartItems = existCart.getCartItems();
 		List<Product> products = new ArrayList<>();
-		
-		for(CartItem cartItem : cartItems) {
-			
-			if(cartItem.getCart().getCartId() == cartId) {
-				
+	
+		for (CartItem cartItem : cartItems) {
+	
+			if (cartItem.getCart().getCartId() == cartId) {
+	
 				Product prod = cartItem.getProduct();
 				products.add(prod);
 			}
 		}
-		
-		if(products.isEmpty()) {
-			
+	
+		if (products.isEmpty()) {
+	
 			throw new ProductException("Cart Is Empty");
 		}
-		
+	
 		return existCart;
-	}
+	}*/
 }

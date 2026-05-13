@@ -1,10 +1,7 @@
 package com.raj.ecommerce.service;
 
-import java.util.List;
-
 import com.raj.ecommerce.exception.CartException;
 import com.raj.ecommerce.model.Cart;
-import com.raj.ecommerce.model.Product;
 
 public interface CartService {
 
@@ -14,7 +11,7 @@ public interface CartService {
 	
 	public Cart decreaseProductQuantity(Integer userId, Integer productId) throws CartException;
 	
-	public void removeProductFromCar(Integer cartId, Integer productId) throws CartException;
+    public void removeProductFromCart(Integer cartId, Integer productId) throws CartException;
 	
 	public void removeAllProductsFromCart(Integer cartId) throws CartException;
 	

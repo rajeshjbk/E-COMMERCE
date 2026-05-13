@@ -1,5 +1,7 @@
 package com.raj.ecommerce.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -17,14 +19,16 @@ public class OrderItem {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "order_item_id")
 	private Integer orderItemId;
-	
-	@Column(name = "order_id")
-	private Integer orderId;
-	
-	@Column(name = "ord_qty")  
+
+	@ManyToOne
+	@JoinColumn(name = "order_id")
+	@JsonIgnore
+	private Orders order;
+
+	@Column(name = "ord_qty")
 	private Integer quantity;
-	
-	//Order Item To Product
+
+	// Order Item To Product
 	@ManyToOne
 	@JoinColumn(name = "product_id")
 	private Product product;
@@ -37,12 +41,12 @@ public class OrderItem {
 		this.orderItemId = orderItemId;
 	}
 
-	public Integer getOrderId() {
-		return orderId;
+	public Orders getOrder() {
+		return order;
 	}
 
-	public void setOrderId(Integer orderId) {
-		this.orderId = orderId;
+	public void setOrder(Orders order) {
+		this.order = order;
 	}
 
 	public Integer getQuantity() {
@@ -61,20 +65,20 @@ public class OrderItem {
 		this.product = product;
 	}
 
-	public OrderItem(Integer orderId, Integer quantity, Product product) {
+	public OrderItem(Orders order, Integer quantity, Product product) {
 		super();
-		this.orderId = orderId;
+		this.order = order;
 		this.quantity = quantity;
 		this.product = product;
 	}
-	
+
 	public OrderItem() {
-		
+
 	}
 
 	@Override
 	public String toString() {
-		return "OrderItem [orderItemId=" + orderItemId + ", orderId=" + orderId + ", quantity=" + quantity
-				+ ", product=" + product + "]";
-	}	
+		return "OrderItem [orderItemId=" + orderItemId + ", quantity=" + quantity + "]";
+	}
+
 }
