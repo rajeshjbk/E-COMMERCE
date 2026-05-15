@@ -58,7 +58,7 @@ public class JwtTokensGeneratorFilter extends OncePerRequestFilter {
 			rolesList.add(role.getAuthority());
 		}
 		return String.join(",", rolesList);   //ADMIN GUEST SUPERADMIN
-		//ADMIN,GUEST,SUPERADMIN
+
 	}
 	
 	@Override
